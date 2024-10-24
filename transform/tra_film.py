@@ -1,9 +1,9 @@
 import traceback
 import pandas as pd
-from util.db_connection import Db_Connection
+from util.db_connection2 import Db_Connection
 def transformar_film():
     try:
-        con_db = Db_Connection('oltp')
+        con_db = Db_Connection('staging')
         ses_db = con_db.start()
         if ses_db == -1:
             raise Exception("El tipo de base de datos dado no es válido")
@@ -13,7 +13,6 @@ def transformar_film():
         sql_stmt =  "SELECT * FROM ext_film"
         film_tra = pd.read_sql(sql_stmt, ses_db)
         
-        film_tra['length'] = film_tra['length'].astype(str)
         
         def categorize_length(length):
             length = int(length)
@@ -26,7 +25,7 @@ def transformar_film():
             else:
                 return '> 2h'
         
-        film_tra['length'] = film_tra['length'].apply(categorize_length)
+        film_tra['duration'] = film_tra['length'].apply(categorize_length)
         
         return film_tra
                 

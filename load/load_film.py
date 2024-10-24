@@ -10,9 +10,9 @@ def cargar_film():
         elif ses_sta_db == -2:
             raise Exception("Error tratando de conectarse a la base de datos ")
         
-        sql_stmt =  "select  film_id, title, release_year, length, rating \
-                    from ext_film"
-        ext_film = pd.read_sql (sql_stmt, ses_sta_db)
+        sql_stmt =  "select  film_id, title, release_year, length, rating, duration \
+                    from tra_film"
+        tra_film = pd.read_sql (sql_stmt, ses_sta_db)
         
      
         
@@ -29,16 +29,19 @@ def cargar_film():
             "release_year": [],
             "length": [],
             "rating": [],
+            "duration": [],
         }
         
-        if not ext_film.empty:
-            for bk, tit, rel, len, rat  \
-            in zip(ext_film['film_id'], ext_film['title'], ext_film['release_year'],ext_film['length'], ext_film['rating']):
+        if not tra_film.empty:
+            for bk, tit, rel, len, rat, dur  \
+            in zip(tra_film['film_id'], tra_film['title'], tra_film['release_year'],
+                   tra_film['length'], tra_film['rating'], tra_film['duration']):
                 dim_film_dict['film_bk'].append(bk),
                 dim_film_dict['title'].append(tit),
                 dim_film_dict['release_year'].append(rel),
                 dim_film_dict['length'].append(len),
                 dim_film_dict['rating'].append(rat)
+                dim_film_dict['duration'].append(dur)
         print(dim_film_dict)        
         
         if dim_film_dict['film_bk']:
