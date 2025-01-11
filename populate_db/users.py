@@ -5,7 +5,6 @@ import random
 
 class User:
     def __init__(self, **kwargs):
-        self.id = kwargs.get('id')
         self.salesforce_id = kwargs.get('salesforce_id')
         self.name = kwargs.get('name')
         self.email = kwargs.get('email')
@@ -52,11 +51,10 @@ class UserManager:
             email = f"{self.fake.user_name()}{email_domain}"
 
             user = User(
-                id=self.generate_id(),
                 salesforce_id=self.fake.uuid4(),
                 name=self.fake.name(),
                 email=email,
-                last_verification_email_sent= last_verification_email_sent,
+                last_verification_email_sent=last_verification_email_sent,
                 email_verified_at=email_verified_at,
                 password=self.fake.password(length=12),
                 country=self.fake.country(),
@@ -77,32 +75,38 @@ class UserManager:
                 id_role=random.randint(1, 5)
             )
 
-            users.append((
-                user.id, user.salesforce_id, user.name, user.email,
+            users.append((user.salesforce_id, user.name, user.email,
                 user.last_verification_email_sent, user.email_verified_at, user.password,
                 user.country, user.phone_code, user.phone_number, user.remember_token,
                 user.created_at, user.updated_at, user.activated_at, user.website,
                 user.zip_code, user.first_name, user.last_name, user.job_role,
-                user.user_ip, user.terms_accepted, user.status, user.id_role
-            ))
+                user.user_ip, user.terms_accepted, user.status, user.id_role))
+
         return users
 
     def save_users(self, num_users: int = 10):
         users = self.generate_users(num_users)
         try:
+            # Abrir la conexión con la base de datos
             self.db_connection.start()
-            cursor = self.db_connection.cursor
+            cursor = self.db_connection.connection.cursor()
+
+            # Consulta SQL para insertar usuarios
             query = """
-            INSERT INTO users (id, salesforce_id, name, email, last_verification_email_sent_at, 
-                email_verified_at, password, country, phone_code, phone_number, remember_token, 
-                created_at, updated_at, activated_at, website, zip_code, first_name, last_name, 
-                job_role, user_ip, terms_accepted, status, id_role)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO users (salesforce_id, name, email, last_verification_email_sent_at, 
+                               email_verified_at, password, country, phone_code, phone_number, 
+                               remember_token, created_at, updated_at, activated_at, website, 
+                               zip_code, first_name, last_name, job_role, user_ip, terms_accepted, 
+                               status, id_role)
+            VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
+
             cursor.executemany(query, users)
-            self.db_connection.connection.commit()
+            self.db_connection.connection.commit()  # Confirmar transacción
+
             print(f"{len(users)} usuarios insertados con éxito en la base de datos.")
         except Exception as e:
             print(f"Error al guardar los usuarios: {e}")
         finally:
+            # Asegurarse de cerrar la conexión
             self.db_connection.stop()

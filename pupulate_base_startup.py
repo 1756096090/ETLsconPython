@@ -9,7 +9,7 @@ from populate_db.users import UserManager
 # manager.save_companies(num_companies=50)
 
 manager = UserManager('oltp')
-manager.save_users(num_users=10)
+manager.save_users(num_users=1000)
 
 
 # import populate_db.roles as roles
