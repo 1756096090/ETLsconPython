@@ -46,13 +46,14 @@ class UserManager:
             created_at = self.fake.date_time_between(start_date='-1y', end_date='now')
             email_verified_at = created_at + timedelta(minutes=random.randint(10, 1440))  # Entre 10 minutos y 24 horas
             activated_at = email_verified_at + timedelta(minutes=random.randint(5, 720))  # Entre 5 minutos y 12 horas
+            last_verification_email_sent = self.fake.date_time_between(start_date=created_at, end_date=email_verified_at)
 
             user = User(
                 id=self.generate_id(),
-                salesforce_id=self.fake.uuid4() if random.random() > 0.8 else None,
+                salesforce_id=self.fake.uuid4(),
                 name=self.fake.name(),
                 email=self.fake.email(),
-                last_verification_email_sent=None,
+                last_verification_email_sent= last_verification_email_sent,
                 email_verified_at=email_verified_at,
                 password=self.fake.password(length=12),
                 country=self.fake.country(),
@@ -62,7 +63,7 @@ class UserManager:
                 created_at=created_at,
                 updated_at=created_at + timedelta(days=random.randint(1, 10)),
                 activated_at=activated_at,
-                website=self.fake.url() if random.random() > 0.5 else None,
+                website=self.fake.url(),
                 zip_code=self.fake.zipcode(),
                 first_name=self.fake.first_name(),
                 last_name=self.fake.last_name(),
@@ -89,7 +90,7 @@ class UserManager:
             self.db_connection.start()
             cursor = self.db_connection.cursor
             query = """
-            INSERT INTO users (id, salesforce_id, name, email, last_verification_email_sent, 
+            INSERT INTO users (id, salesforce_id, name, email, last_verification_email_sent_at, 
                 email_verified_at, password, country, phone_code, phone_number, remember_token, 
                 created_at, updated_at, activated_at, website, zip_code, first_name, last_name, 
                 job_role, user_ip, terms_accepted, status, id_role)

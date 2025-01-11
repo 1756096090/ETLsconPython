@@ -1,11 +1,10 @@
 from faker import Faker
 from util.db_postgres import DB_Postgres as db
-from datetime import datetime
 import random
+import traceback
 
 class Role:
-    def __init__(self, role_id: str, name: str, guard_name: str):
-        self.role_id = role_id
+    def __init__(self, name: str, guard_name: str):
         self.name = name
         self.guard_name = guard_name
 
@@ -16,37 +15,31 @@ class RoleManager:
         self.db_connection = db(database)
         self.fake = Faker()
 
-    def generate_id(self) -> int:
-        timestamp = int(datetime.now().strftime("%m%d%H%M%S%f")[:-3])  # Milisegundos
-        random_part = random.randint(100, 999)  # Número aleatorio de 3 dígitos
-        return int(f"{timestamp}{random_part}")
-
     def generate_roles(self, num_roles: int = 10) -> list:
+        """Genera una lista de roles aleatorios."""
         guard_names = ['api', 'web']
         roles = []
         for _ in range(num_roles):
-            role_id = self.generate_id()
-            name = self.fake.job()
+            name = self.fake.job()  
             guard_name = random.choice(guard_names)
-            role = Role(role_id, name, guard_name)
-            roles.append((role.role_id, role.name, role.guard_name))
+            roles.append((name, guard_name))  # Corrige el formato para que sea una tupla
         return roles
 
     def save_roles(self, num_roles: int = 10):
+        """Genera y guarda roles en la base de datos."""
         roles = self.generate_roles(num_roles)
         try:
-            self.db_connection.start()
+            self.db_connection.start()  
             cursor = self.db_connection.cursor
             query = """
-            INSERT INTO roles (id, name, guard_name)
-            VALUES (%s, %s, %s)
+            INSERT INTO roles (name, guard_name)
+            VALUES (%s, %s)
             """
-            cursor.executemany(query, roles)
-            self.db_connection.connection.commit()
+            cursor.executemany(query, roles)  
+            self.db_connection.connection.commit()  # Confirma la transacción
             print(f"{len(roles)} roles insertados con éxito en la base de datos.")
         except Exception as e:
-            print(f"Error al guardar los roles: {e}")
+            print("Error al guardar los roles:")
+            traceback.print_exc()  
         finally:
-            self.db_connection.stop()
-
-
+            self.db_connection.stop()  #

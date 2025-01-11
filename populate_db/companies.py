@@ -14,7 +14,7 @@ class CompanyManager:
     def __init__(self, database: str):
         self.database = database
         self.db_connection = db(database)
-        self.fake = Faker('es_EC')  
+        self.fake = Faker()  
 
     def generate_ruc(self) -> str:
         #generar RUC con 10 dígitos aleatorios + '001'
@@ -54,8 +54,4 @@ class CompanyManager:
             print(f"Error al guardar las empresas: {e}")
         finally:
             self.db_connection.stop()
-
-
-if __name__ == "__main__":
-    manager = CompanyManager("nombre_de_tu_base_de_datos")
-    manager.save_companies(num_companies=50)
+            
