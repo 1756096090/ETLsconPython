@@ -48,11 +48,14 @@ class UserManager:
             activated_at = email_verified_at + timedelta(minutes=random.randint(5, 720))  # Entre 5 minutos y 12 horas
             last_verification_email_sent = self.fake.date_time_between(start_date=created_at, end_date=email_verified_at)
 
+            email_domain = random.choice(['@gmail.com', '@yahoo.com', '@hotmail.com', '@outlook.com', f"@{self.fake.domain_name()}"])
+            email = f"{self.fake.user_name()}{email_domain}"
+
             user = User(
                 id=self.generate_id(),
                 salesforce_id=self.fake.uuid4(),
                 name=self.fake.name(),
-                email=self.fake.email(),
+                email=email,
                 last_verification_email_sent= last_verification_email_sent,
                 email_verified_at=email_verified_at,
                 password=self.fake.password(length=12),
