@@ -48,7 +48,7 @@ class UserManager:
             last_verification_email_sent = self.fake.date_time_between(start_date=created_at, end_date=email_verified_at)
 
             email_domain = random.choice(['@gmail.com', '@yahoo.com', '@hotmail.com', '@outlook.com', f"@{self.fake.domain_name()}"])
-            email = f"{self.fake.user_name()}{email_domain}"
+            email = f"{self.fake.user_name()}{random.randint(10, 1440)}{email_domain}"
 
             user = User(
                 salesforce_id=self.fake.uuid4(),
