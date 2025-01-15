@@ -1,88 +1,39 @@
-from extract.ext_countries import extraer_countries
-from extract.ext_stores import extraer_stores
-from extract.ext_address import extraer_address
-from extract.ext_city import extraer_city
-from extract.ext_film import extraer_film
-from extract.ext_inventory import extraer_inventory
-from extract.ext_date import extraer_date
+from extract.extract import extract
 from extract.per_staging import persistir_staging
-from util.db_connection import Db_Connection
-from transform.tra_stores import transformar_stores
-from transform.tra_film import transformar_film
-from load.load_stores import cargar_stores
-from load.load_film import cargar_film
-from load.load_date import cargar_date
-from load.load_fact_inventory import cargar_fact_inventory
+from transform.tra_companies import transform_companies
+from transform.tra_associations import transform_associations
+from load.load_dim_roles import load_roles
+from load.load_dim_companies import load_companies
+from load.load_dim_users import load_users
+from load.load_dim_dates import load_dates
+from load.load_fact_associations import load_associations
 import traceback
 
-
 try:
-    print('Extrayendo dato desde un csv')
-    print('Extrayendo countries')
-    countries = extraer_countries()
-    # print(countries)
-    print('Persistiendo countries en staging')
-    persistir_staging(countries, 'ext_country')
-    
-    print('Extrayendo date');
-    date = extraer_date()
-    # print(date)
-    print('Persistiendo date en staging')
-    persistir_staging(date, 'ext_date')
-    
-    print('Extrayendo datos de la base de datos')
-    print('Extrayendo address')
-    address = extraer_address()
-    # print(address)
-    print('Persistiendo address en staging')
-    persistir_staging(address, 'ext_address')
-    
-    print('Extrayendo city')
-    city = extraer_city()
-    # print(city)
-    print('Persistiendo city en staging')
-    persistir_staging(city, 'ext_city')
-    
-    print('Extrayendo film')
-    film = extraer_film()
-    # print(film)
-    print('Persistiendo film en staging')
-    persistir_staging(film, 'ext_film')
-    
-    print('Extrayendo inventory')
-    inventory = extraer_inventory()
-    # print(inventory)
-    print('Persistiendo inventory en staging')
-    persistir_staging(inventory, 'ext_inventory')
-    
-    print('Extrayendo stores')
-    stores = extraer_stores()   
-    # print(stores)
-    persistir_staging(stores, 'ext_store')
-    
-    print('Trasformado datos de STORES en els staging') 
-    tra_stores = transformar_stores()
-    persistir_staging(tra_stores, 'tra_store')
-    print('Trasformado datos de FILM en els staging')
-    tra_film = transformar_film()
-    print(tra_film)
-    print("persistir tra_film en staging")
-    persistir_staging(tra_film, 'tra_film')
-    
-    # print(tra_stores
-    print('Cargando datos de staging a stores')
-    cargar_stores()
-    print('Cargando datos de FILM en els staging')
-    cargar_film()
-    print('Cargando datos de DATE en els staging')
-    cargar_date()
-    print('Cargando datos de FACT_INVENTORY en los staging')
-    cargar_fact_inventory()
-    
-    print('Todos los pasos han finalizado correctamente.')
+    # roles = extract("roles")
+    # persistir_staging(roles, 'ext_roles')
+    # print("Roles persistidos con éxito")
+    # user = extract("users")
+    # persistir_staging(user, 'ext_users')
+    # print("Usuarios persistidos con éxito")
+    # companies = extract("companies")
+    # persistir_staging(companies, 'ext_companies')
+    # print("Empresas persistidas con éxito")
+    # associations = extract("associations")
+    # persistir_staging(associations, 'ext_associations')
+    # print("Asociaciones persistidas con éxito")
+    # tra_companies= transform_companies()
+    # persistir_staging(tra_companies, "tra_companies")
+    # transform_associations =transform_associations()
+    # persistir_staging(transform_associations, "tra_associations")
+    # load_roles()
+    # load_companies()
+    # load_users()
+    # load_dates()
+    load_associations()
 
+   
 except:
     traceback.print_exc()
 finally:
     pass
-    # ses_db_oltp = con_db.stop()

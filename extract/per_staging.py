@@ -1,26 +1,17 @@
+from sqlalchemy import create_engine
 import traceback
-import pandas as pd
-from util.db_connection import Db_Connection
+from util.db_postgres import DB_Postgres as db
 
 def persistir_staging(df_stag, tab_name):
     try:
-        type = 'mysql'
-        host = 'localhost'
-        port = '3306'
-        user = 'root'
-        pwd = 'root'
-        db = 'staging'
         
-        con_db = Db_Connection(type, host, port, user, pwd, db)
-        ses_db = con_db.start()
-        if ses_db == -1:
-            raise Exception("El tipo de base de datos dado no es válido")
-        elif ses_db == -2:
-            raise Exception("Error tratando de conectarse a la base de datos ")
-        
-        df_stag.to_sql(tab_name, ses_db, if_exists='replace', index= False)
-            
-    except:
+        print ("Persistir Staging")
+        dbPostgres = db("staging")
+        dbPostgres.start() 
+        engine = create_engine(dbPostgres.connection_string())  
+        df_stag.to_sql(tab_name, engine, if_exists='replace', index=False)
+        print("Finalizado Persistir Staging")
+    
+    except Exception as e:
+        print("Ocurrió un error:", str(e))
         traceback.print_exc()
-    finally:
-        pass

@@ -14,11 +14,11 @@ class AssociationManager:
             self.db_connection.start()
             cursor = self.db_connection.cursor
 
-            #Recuperar todos los IDs de usuarios
+            # Recuperar todos los IDs de usuarios
             cursor.execute("SELECT id FROM users")
             user_ids = [row[0] for row in cursor.fetchall()]
 
-            #Recuperar todos los IDs de compañías
+            # Recuperar todos los IDs de compañías
             cursor.execute("SELECT company_id FROM companies")
             company_ids = [row[0] for row in cursor.fetchall()]
 
@@ -31,18 +31,24 @@ class AssociationManager:
         finally:
             self.db_connection.stop()
 
-    def generate_associations(self, num_associations: int, user_ids: list, company_ids: list):
+    def generate_associations(self, user_ids: list, company_ids: list, max_associations: int):
         """
-        Genera asociaciones aleatorias entre usuarios y empresas.
+        Genera al menos una asociación por usuario y un número aleatorio adicional de asociaciones por usuario.
         """
-        associations = set()  # Usamos un conjunto para evitar duplicados
-        while len(associations) < num_associations:
-            user_id = random.choice(user_ids)
+        associations = set()  
+
+        for user_id in user_ids:
             company_id = random.choice(company_ids)
             associations.add((user_id, company_id))
+
+            num_extra_associations = random.randint(1, max_associations)
+            for _ in range(num_extra_associations):
+                company_id = random.choice(company_ids)
+                associations.add((user_id, company_id))
+
         return list(associations)
 
-    def save_associations(self, num_associations: int = 50):
+    def save_associations(self, max_associations: int = 2):
         """
         Guarda las asociaciones en la tabla `associations`.
         """
@@ -51,7 +57,7 @@ class AssociationManager:
             print("No se encontraron usuarios o compañías en la base de datos. Asegúrate de poblar estas tablas primero.")
             return
 
-        associations = self.generate_associations(num_associations, user_ids, company_ids)
+        associations = self.generate_associations(user_ids, company_ids, max_associations)
 
         try:
             self.db_connection.start()
@@ -59,6 +65,7 @@ class AssociationManager:
             query = """
             INSERT INTO associations (user_id, company_id)
             VALUES (%s, %s)
+            ON CONFLICT DO NOTHING
             """
             cursor.executemany(query, associations)
             self.db_connection.connection.commit()
@@ -69,8 +76,3 @@ class AssociationManager:
 
         finally:
             self.db_connection.stop()
-
-
-# if __name__ == "__main__":
-#     manager = AssociationManager("oltp")
-#     manager.save_associations(num_associations=50)

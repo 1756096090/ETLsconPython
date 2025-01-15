@@ -1,0 +1,39 @@
+from sqlalchemy import create_engine
+import pandas as pd
+import traceback
+from util.db_postgres import DB_Postgres as db
+
+def load_roles():
+    try:
+        print("Iniciar Carga al sor")
+        
+        dbPostgres = db("staging")
+        cursor = dbPostgres.start()  
+
+        if cursor is None:
+            raise Exception("No se pudo obtener un cursor válido")
+
+        engine = create_engine(dbPostgres.connection_string())  # Usa la cadena de conexión de dbPostgres
+
+        dbPostgresSor = db("sor")
+        cursorSor = dbPostgresSor.start()
+        
+        if cursorSor is None:
+            raise Exception("No se pudo obtener un cursor válido para el Sor")
+        
+        engineSor = create_engine(dbPostgresSor.connection_string())  
+
+        query = "SELECT * FROM ext_roles"
+        roles_df = pd.read_sql(query, engine)
+
+        roles_df = roles_df.rename(columns={'id': 'id_roles_bk'})
+
+        print(roles_df)
+
+        roles_df.to_sql("dim_roles", engineSor, if_exists='append', index=False)
+
+        print("Finalizar carga al Sor")
+
+    except Exception as e:
+        print("Ocurrió un error:", str(e))
+        traceback.print_exc()
