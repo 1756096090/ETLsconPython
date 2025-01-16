@@ -90,15 +90,12 @@ def read_json(file_path: str):
         for record in data:
             print(record)
 
-# File paths
-csv_file_path = 'users_data.csv'
-json_file_path = 'company_data.json'
+csv_file_path = 'assets/users_data.csv'
+json_file_path = 'assets/company_data.json'
 
-# Generate data
 generate_csv_data(csv_file_path)
 generate_json_data(json_file_path)
 
-# Read data
 print("CSV Data:")
 read_csv(csv_file_path)
 

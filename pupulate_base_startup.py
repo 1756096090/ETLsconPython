@@ -3,16 +3,22 @@ from populate_db.roles import RoleManager
 from populate_db.companies import CompanyManager
 from populate_db.users import UserManager
 from populate_db.associations import AssociationManager
+from generateData.csv_json_data import read_csv, read_json
 
-#role_manager = RoleManager('oltp')
-#role_manager.save_roles(5)
+managerRole = RoleManager('oltp')
+managerRole.save_roles(5)
 
-# manager = CompanyManager('oltp')
-# manager.save_companies(num_companies=50)
+managerCompany = CompanyManager('oltp')
+managerCompany.save_companies(num_companies=50)
 
-# manager = UserManager('oltp')
-# manager.save_users(num_users=1000)
+managerUsers = UserManager('oltp')
+managerUsers.save_users(num_users=1000)
 
-manager = AssociationManager('oltp')
-manager.save_associations()
+managerAss = AssociationManager('oltp')
+managerAss.save_associations()
+
+
+
+
+
 
